@@ -10,9 +10,13 @@ class OrderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: commonFAB('PAYMENT', 725.00, context),
-      appBar:
-          commonAppBar(leading: const Icon(Icons.arrow_back), title: 'Order Summary'),
+      floatingActionButton: commonFAB('PAYMENT', () {}, 725.00, context),
+      appBar: commonAppBar(
+          leading:
+              IconButton(onPressed: () {
+                Navigator.of(context).pop();
+              }, icon: const Icon(Icons.arrow_back)),
+          title: 'Order Summary'),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

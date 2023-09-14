@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/core/colors.dart';
+import 'package:prior_soft/core/constants.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
 import 'package:prior_soft/core/widgets/error_page.dart';
 import 'package:prior_soft/data/models/product_model.dart';
@@ -9,6 +10,7 @@ import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_blo
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_event.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_state.dart';
 import 'package:prior_soft/presentation/product_detail_page.dart';
+import 'package:prior_soft/presentation/widgets/cart_icon.dart';
 
 class DiscoverPage extends StatefulWidget {
   DiscoverPage({super.key});
@@ -61,7 +63,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.only(left: kPadding),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -70,42 +72,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          const Icon(
-                            Icons.shopping_cart,
-                            size: 30,
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              constraints: const BoxConstraints(
-                                minWidth: 16,
-                                minHeight: 16,
-                              ),
-                              child: const Text(
-                                '1',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
+                    cartIcon(),
                   ],
                 ),
               ),
@@ -259,7 +226,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 width: 5,
               ),
               customText(
-                text: '(${product.review.length} reviews)',
+                text: '(${product.reviews.length} reviews)',
                 fontSize: 11,
                 color: const Color.fromRGBO(183, 183, 183, 1),
               )

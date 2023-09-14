@@ -28,7 +28,7 @@ class ProductService {
         description:
             'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
         rating: 3,
-        review: [
+        reviews: [
           ReviewModel(
               userId: '123',
               userName: "Nolan Cadter",
@@ -39,7 +39,8 @@ class ProductService {
                   'My Son loved his shoes! The down side was that when it had arrived, the box was smashed in and was all beat up. The shoes did have a scuff/some kind of mark on it.',
               date: DateTime.now())
         ],
-        size: [39, 40, 41]),
+        colors: ['Red', 'Blue'],
+        sizes: [39, 40, 41]),
     ProductModel(
         productId: '3',
         name: 'Nike Air Jordan 1 low',
@@ -51,8 +52,9 @@ class ProductService {
         description:
             'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
         rating: 3,
-        review: [],
-        size: [39, 40]),
+        reviews: [],
+        colors: ['White', 'Green'],
+        sizes: [39, 40]),
     ProductModel(
         productId: '4',
         name: 'Nike Air Jordan 1 low',
@@ -64,8 +66,9 @@ class ProductService {
         description:
             'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
         rating: 4 / 5,
-        review: [],
-        size: [40]),
+        reviews: [],
+        colors: ['Black', 'Green', 'Red'],
+        sizes: [40]),
   ];
   Future<Either<Error, List<ProductModel>>> getProducts() async {
     await Future.delayed(Duration(seconds: 2));

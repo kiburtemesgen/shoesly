@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:prior_soft/core/colors.dart';
 import 'package:prior_soft/core/constants.dart';
+import 'package:prior_soft/core/utils/get_color_from_string.dart';
 import 'package:prior_soft/core/widgets/common_appbar.dart';
+import 'package:prior_soft/core/widgets/common_fab.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
+import 'package:prior_soft/data/models/cart_model.dart';
 import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/data/models/review_model.dart';
+import 'package:prior_soft/injector.dart';
+import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
+import 'package:prior_soft/presentation/blocs/cart_bloc/cart_event.dart';
+import 'package:prior_soft/presentation/widgets/cart_icon.dart';
 
 class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({super.key, required this.product});
@@ -15,17 +22,35 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  int selecedSize = 0;
+  late int selectedSize;
+  late String selectedColor;
+  @override
+  void initState() {
+    super.initState();
+    selectedSize = widget.product.sizes.first;
+    selectedColor = widget.product.colors.first;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: commonAppBar(leading: const Icon(Icons.arrow_back), actions: [
-        const Padding(
-          padding: EdgeInsets.only(right: kPadding),
-          child: Icon(Icons.shopping_cart),
-        )
-      ]),
+      floatingActionButton: commonFAB('ADD TO CART', () {
+        sl<CartBloc>().add(AddToCart(
+            cart: CartModel(
+                product: widget.product,
+                quantity: 1,
+                color: selectedColor,
+                size: selectedSize)));
+      }, 235.00, context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      appBar: commonAppBar(
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.arrow_back)),
+          actions: [cartIcon()]),
       body: Container(
         color: Colors.white,
         child: SingleChildScrollView(
@@ -54,7 +79,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ),
                         ),
                         Positioned(
-                            bottom: 10, right: 10, child: _detailImageColor()),
+                            bottom: 10,
+                            right: 10,
+                            child: _detailImageColor(widget.product.colors)),
                         Positioned(
                             bottom: 20, left: 10, child: _detailImageList()),
                       ],
@@ -113,7 +140,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       width: 5,
                     ),
                     customText(
-                      text: '(${widget.product.review.length} reviews)',
+                      text: '(${widget.product.reviews.length} reviews)',
                       fontSize: 11,
                       color: const Color.fromRGBO(183, 183, 183, 1),
                     )
@@ -136,12 +163,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: SizedBox(
                   height: 40,
                   child: ListView.builder(
-                      itemCount: widget.product.size.length,
+                      itemCount: widget.product.sizes.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         return _showSizeItem(
-                            widget.product.size[index].toString(),
-                            index == selecedSize,
+                            widget.product.sizes[index].toString(),
+                            index == widget.product.sizes.indexOf(selectedSize),
                             index);
                       }),
                 ),
@@ -157,10 +184,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     fontWeight: FontWeight.w600),
               ),
               Padding(
-                padding:  EdgeInsets.only(left: 20.0),
-                child: customText(
-                    text:
-                        widget.product.description),
+                padding: const EdgeInsets.only(left: 20.0),
+                child: customText(text: widget.product.description),
               ),
               const SizedBox(
                 height: 25,
@@ -168,7 +193,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: customText(
-                    text: 'Review(${widget.product.review.length})',
+                    text: 'Review(${widget.product.reviews.length})',
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
@@ -177,11 +202,46 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
               ListView.builder(
                 shrinkWrap: true,
-                itemCount: widget.product.review.length,
-                itemBuilder: (context, index){
-                return _reviewItem(widget.product.review[index]);
-              },),
-          
+                itemCount: widget.product.reviews.length,
+                itemBuilder: (context, index) {
+                  return _reviewItem(widget.product.reviews[index]);
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: kPadding),
+                child: Container(
+                  width: size.width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(width: 0.5, color: Colors.grey)),
+                  child: Center(
+                      child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: customText(
+                        text: 'SEE ALL REVIEWS', fontWeight: FontWeight.bold),
+                  )),
+                ),
+              ),
+              Container(
+                width: size.width,
+                height: 30,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      ColorConst.whitePrimary,
+                      ColorConst.whiteSecondary
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 90,
+              ),
             ],
           ),
         ),
@@ -211,23 +271,36 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _detailImageColor() {
+  Widget _detailImageColor(List<String> colors) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(25)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(children: [
-          _colorItem(Colors.white),
-          _colorItem(Colors.black),
-          _colorItem(Colors.green),
-          _colorItem(Colors.blue),
-        ]),
+        child: SizedBox(
+          height: 20,
+          child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: colors.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedColor = colors[index];
+                      });
+                    },
+                    child: _colorItem(
+                        getColorFromString(colors[index]),
+                        colors.indexOf(selectedColor) == index,
+                        colors[index].toLowerCase() == 'white'));
+              }),
+        ),
       ),
     );
   }
 
-  Widget _colorItem(Color color) {
+  Widget _colorItem(Color color, bool isSelected, bool isWhite) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2.50),
       child: Container(
@@ -237,6 +310,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             color: color,
             borderRadius: BorderRadius.circular(180),
             border: Border.all(width: 1, color: Colors.grey)),
+        child: isSelected
+            ? Center(
+                child: Icon(
+                Icons.check,
+                color: isWhite ? Colors.black : Colors.white,
+                size: 15,
+              ))
+            : const SizedBox(),
       ),
     );
   }
@@ -245,7 +326,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return InkWell(
       onTap: () {
         setState(() {
-          selecedSize = index;
+          selectedSize = index;
         });
       },
       child: Padding(
@@ -340,9 +421,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 const SizedBox(
                   height: 5,
                 ),
-                customText(
-                    text:
-                        review.description)
+                customText(text: review.description)
               ],
             ),
           )

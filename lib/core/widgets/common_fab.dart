@@ -1,7 +1,7 @@
   import 'package:flutter/material.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
 
-Widget commonFAB(String text, double amount, BuildContext context) {
+Widget commonFAB(String text, Function() onTap,  double amount, BuildContext context) {
     return Container(
       height: 90,
       width: MediaQuery.of(context).size.width,
@@ -25,10 +25,13 @@ Widget commonFAB(String text, double amount, BuildContext context) {
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 40.0, vertical: 12.0),
-              child: customText(
-                  text: text,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+              child: InkWell(
+        onTap: onTap,
+        child: customText(
+                    text: text,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+      ),
             ),
           )
         ]),

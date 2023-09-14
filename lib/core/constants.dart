@@ -1,2 +1,2 @@
 const urbanist = 'urbanist';
-const kPadding = 20.0;
+const kPadding = 25.0;

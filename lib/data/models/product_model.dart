@@ -8,8 +8,9 @@ class ProductModel {
   String brand;
   String description;
   double rating;
-  List<double> size;
-  List<ReviewModel> review;
+  List<int> sizes;
+  List<String> colors;
+  List<ReviewModel> reviews;
 
   ProductModel(
       {required this.productId,
@@ -19,6 +20,7 @@ class ProductModel {
       required this.brand,
       required this.description,
       required this.rating,
-      required this.review,
-      required this.size});
+      required this.reviews,
+      required this.colors,
+      required this.sizes});
 }

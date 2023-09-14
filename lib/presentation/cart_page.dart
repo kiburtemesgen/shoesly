@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/core/constants.dart';
 import 'package:prior_soft/core/widgets/common_appbar.dart';
 import 'package:prior_soft/core/widgets/common_fab.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
+import 'package:prior_soft/data/models/cart_model.dart';
+import 'package:prior_soft/injector.dart';
+import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
+import 'package:prior_soft/presentation/blocs/cart_bloc/cart_event.dart';
+import 'package:prior_soft/presentation/blocs/cart_bloc/cart_state.dart';
+import 'package:prior_soft/presentation/order_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -10,11 +17,18 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: commonFAB('CHECKOUT', 705.00, context),
+        floatingActionButton: commonFAB('CHECKOUT', () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => const OrderPage()));
+        }, 705.00, context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         appBar: commonAppBar(
           title: 'Cart',
-          leading: const Icon(Icons.arrow_back_sharp),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.arrow_back_sharp)),
         ),
         body: SingleChildScrollView(
             child: Column(
@@ -22,14 +36,23 @@ class CartPage extends StatelessWidget {
             const SizedBox(
               height: 25,
             ),
-            _cartItem(1, false),
-            _cartItem(2, false),
-            _cartItem(3, true),
+            BlocBuilder<CartBloc, CartState>(
+              builder: (context, state) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.carts.length,
+                  itemBuilder: (context, index) {
+                    return _cartItem(state.carts[index], index);
+                  },
+                );
+              },
+            )
           ],
         )));
   }
 
-  Widget _cartItem(int index, bool isDeleting) {
+  Widget _cartItem(CartModel cart, int index) {
+    bool isDeleting = false;
     double hPadding = isDeleting ? 0 : kPadding;
     return Align(
       alignment: Alignment.centerLeft,
@@ -63,9 +86,9 @@ class CartPage extends StatelessWidget {
                     height: 80,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        image: const DecorationImage(
-                            image: NetworkImage(
-                                'https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/wohf5k8sjdmgogckoczk/air-jordan-1-mid-shoes-D8g1Qq.png'))),
+                        image: DecorationImage(
+                            image: NetworkImage(cart.product.image.first),
+                            fit: BoxFit.cover)),
                   ),
                 ),
               ),
@@ -74,49 +97,60 @@ class CartPage extends StatelessWidget {
               ),
               Expanded(
                   child: SizedBox(
-                    height: 80,
-                    child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     customText(
-                        text: 'Jordan 1 Retro High Tie Dye',
+                        text: cart.product.name,
                         fontSize: 14,
                         fontWeight: FontWeight.w700),
                     customText(
-                        text: 'Nike Red Grey 40',
+                        text: '${cart.product.name} ${cart.color} ${cart.size}',
                         fontSize: 12,
                         fontWeight: FontWeight.w300,
                         color: Colors.grey),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        customText(text: '\$235.00'),
+                        customText(text: '\$${cart.product.price}'),
                         Row(
                           children: [
-                            const Icon(
-                              Icons.remove_circle_outline,
-                              size: 25,
-                              color: Colors.grey,
-                            ),
+                            IconButton(
+                                onPressed: () {
+                                  sl<CartBloc>()
+                                      .add(DecreaseQuantity(index: index));
+                                },
+                                icon: const Icon(
+                                  Icons.remove_circle_outline,
+                                  size: 25,
+                                  color: Colors.grey,
+                                )),
                             const SizedBox(
                               width: 7,
                             ),
-                            customText(text: '1', fontWeight: FontWeight.bold),
+                            customText(
+                                text: cart.quantity.toString(),
+                                fontWeight: FontWeight.bold),
                             const SizedBox(
                               width: 7,
                             ),
-                            const Icon(
-                              Icons.add_circle_outline,
-                              size: 25,
-                            )
+                            IconButton(
+                                onPressed: () {
+                                  sl<CartBloc>()
+                                      .add(IncreaseQuantity(index: index));
+                                },
+                                icon: const Icon(
+                                  Icons.add_circle_outline,
+                                  size: 25,
+                                ))
                           ],
                         )
                       ],
                     )
-                                  ],
-                                ),
-                  )),
+                  ],
+                ),
+              )),
               !isDeleting
                   ? const SizedBox()
                   : Row(

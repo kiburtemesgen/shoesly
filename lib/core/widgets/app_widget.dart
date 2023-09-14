@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/injector.dart';
+import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
 import 'package:prior_soft/presentation/discover_page.dart';
 
@@ -12,12 +13,13 @@ class AppWidget extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<GetProductsBloc>(create: (_) => sl<GetProductsBloc>()),
+        BlocProvider<CartBloc>(create: (_) => sl<CartBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Shoesly',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
         home: DiscoverPage(),
