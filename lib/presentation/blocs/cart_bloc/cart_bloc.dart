@@ -9,7 +9,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       if (event is AddToCart) {
         //Before adding the product to the cart, first we have to check whether the product is already exist or not
         final existingCartIndex = state.carts.indexWhere(
-          (cart) => cart.product.productId == event.cart.product.productId,
+          (cart) => cart.product.id == event.cart.product.id,
         );
 
         if (existingCartIndex != -1) {
@@ -21,16 +21,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             color: state.carts[existingCartIndex].color,
             size: state.carts[existingCartIndex].size,
           );
-          print('the products is found and about to update the quantity');
           emit(CartState(carts: updatedCarts));
         } else {
-          print('the product is not found');
           // Product doesn't exist in cart, add it
           final updatedCarts = [
             ...state.carts,
             CartModel(
                 product: event.cart.product,
-                quantity: 1,
+                quantity: event.cart.quantity,
                 color: event.cart.color,
                 size: event.cart.size),
           ];
@@ -38,7 +36,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           emit(CartState(carts: updatedCarts));
         }
       } else if (event is RemoveFromCart) {
-        final updatedCart = state.carts..removeAt(event.index);
+        final updatedCart = [
+          ...state.carts
+        ]; 
+        updatedCart
+            .removeAt(event.index);
+
         emit(CartState(carts: updatedCart));
       } else if (event is IncreaseQuantity) {
         final updatedCarts = List<CartModel>.from(state.carts);

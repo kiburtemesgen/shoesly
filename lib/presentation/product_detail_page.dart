@@ -5,12 +5,9 @@ import 'package:prior_soft/core/utils/get_color_from_string.dart';
 import 'package:prior_soft/core/widgets/common_appbar.dart';
 import 'package:prior_soft/core/widgets/common_fab.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
-import 'package:prior_soft/data/models/cart_model.dart';
 import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/data/models/review_model.dart';
-import 'package:prior_soft/injector.dart';
-import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
-import 'package:prior_soft/presentation/blocs/cart_bloc/cart_event.dart';
+import 'package:prior_soft/presentation/widgets/add_to_cart_dialog.dart';
 import 'package:prior_soft/presentation/widgets/cart_icon.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -24,6 +21,7 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
   late int selectedSize;
   late String selectedColor;
+
   @override
   void initState() {
     super.initState();
@@ -35,14 +33,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      floatingActionButton: commonFAB('ADD TO CART', () {
-        sl<CartBloc>().add(AddToCart(
-            cart: CartModel(
-                product: widget.product,
-                quantity: 1,
-                color: selectedColor,
-                size: selectedSize)));
-      }, 235.00, context),
+      floatingActionButton: commonFAB('ADD TO CART', 'Price', () {
+        _showAddToCartDialog(context);
+      }, widget.product.price, context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: commonAppBar(
           leading: IconButton(
@@ -427,6 +420,34 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           )
         ],
       ),
+    );
+  }
+
+  void _showAddToCartDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25.0),
+                        topRight: Radius.circular(25.0))),
+                child: AddToCartDialog(
+                  product: widget.product,
+                  selectedColor: selectedColor,
+                  selectedSize: selectedSize,
+                )),
+          ),
+        );
+      },
     );
   }
 }

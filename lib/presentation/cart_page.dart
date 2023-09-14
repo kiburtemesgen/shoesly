@@ -16,11 +16,23 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double getTotal(List<CartModel> carts) {
+      double total = 0;
+      for (var cart in carts) {
+        total += cart.quantity * cart.product.price;
+      }
+      return total;
+    }
+
     return Scaffold(
-        floatingActionButton: commonFAB('CHECKOUT', () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => const OrderPage()));
-        }, 705.00, context),
+        floatingActionButton: BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            return commonFAB('CHECKOUT', 'Grand Total', () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => OrderPage()));
+            }, getTotal(state.carts), context);
+          },
+        ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         appBar: commonAppBar(
           title: 'Cart',
@@ -52,35 +64,30 @@ class CartPage extends StatelessWidget {
   }
 
   Widget _cartItem(CartModel cart, int index) {
-    bool isDeleting = false;
-    double hPadding = isDeleting ? 0 : kPadding;
-    return Align(
-      alignment: Alignment.centerLeft,
-      widthFactor: 0.5,
-      child: GestureDetector(
-        onHorizontalDragStart: (val) {
-          print('drag started');
-        },
-        onHorizontalDragCancel: () {
-          print('cancel');
-        },
-        // onHorizontalDragUpdate: (val){
-        //   print('on update');
-        // },
-        onForcePressStart: (update) {},
-        onHorizontalDragEnd: (details) {
-          print('end');
-          if (details.velocity.pixelsPerSecond.dx < 0) {}
-        },
+    return Dismissible(
+      key: Key(cart.product.id),
+      background: Container(
+        color: Colors.red,
+        child: const Icon(
+          Icons.delete,
+          color: Colors.white,
+        ),
+      ),
+      onDismissed: (direction) {
+        sl<CartBloc>().add(RemoveFromCart(index: index));
+      },
+      child: Align(
+        alignment: Alignment.centerLeft,
+        widthFactor: 0.5,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(hPadding, 0, hPadding, 25),
+          padding: const EdgeInsets.fromLTRB(kPadding, 0, kPadding, 25),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRect(
                 child: Align(
                   alignment: Alignment.centerRight,
-                  widthFactor: isDeleting ? 0.5 : 1,
+                  widthFactor: 1,
                   child: Container(
                     width: 80,
                     height: 80,
@@ -151,30 +158,6 @@ class CartPage extends StatelessWidget {
                   ],
                 ),
               )),
-              !isDeleting
-                  ? const SizedBox()
-                  : Row(
-                      children: [
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                bottomLeft: Radius.circular(15)),
-                            color: Colors.redAccent,
-                          ),
-                          child: Center(
-                              child: Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          )),
-                        ),
-                      ],
-                    )
             ],
           ),
         ),

@@ -1,48 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:prior_soft/core/constants.dart';
+import 'package:prior_soft/core/utils/get_order_from_cart.dart';
 import 'package:prior_soft/core/widgets/common_appbar.dart';
 import 'package:prior_soft/core/widgets/common_fab.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
+import 'package:prior_soft/data/models/order_model.dart';
 
 class OrderPage extends StatelessWidget {
-  const OrderPage({super.key});
+  OrderPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final order = getOrderFromCart();
     return Scaffold(
-      floatingActionButton: commonFAB('PAYMENT', () {}, 725.00, context),
+      floatingActionButton: commonFAB('PAYMENT', 'Grand Total', () {}, order.total, context),
       appBar: commonAppBar(
-          leading:
-              IconButton(onPressed: () {
+          leading: IconButton(
+              onPressed: () {
                 Navigator.of(context).pop();
-              }, icon: const Icon(Icons.arrow_back)),
+              },
+              icon: const Icon(Icons.arrow_back)),
           title: 'Order Summary'),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _title('Information'),
-            _informationItem('Payment Method', 'Credit Card'),
+            _informationItem('Payment Method', order.paymentMethod),
             _divider(),
-            _informationItem('Location', 'Semarang, Indonesia'),
+            _informationItem('Location', order.location),
             _title('Order Detail'),
             const SizedBox(
               height: 20.0,
             ),
-            _orderDetailItem(),
-            _orderDetailItem(),
-            _orderDetailItem(),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: order.orderDetail.length,
+              itemBuilder: (context, index){
+              return _orderDetailItem(order.orderDetail[index]);
+            },),
             _title('Payment Detail'),
             const SizedBox(
               height: 20.0,
             ),
-            _paymentDetailItem('Sub Total', 705.00, false),
-            _paymentDetailItem('Shipping', 20.00, false),
+            _paymentDetailItem('Sub Total', order.subTotal, false),
+            _paymentDetailItem('Shipping', order.shipping, false),
             _divider(),
             const SizedBox(
               height: 10,
             ),
-            _paymentDetailItem('Total Order', 725.00, true),
+            _paymentDetailItem('Total Order', order.total, true),
           ],
         ),
       ),
@@ -90,7 +97,7 @@ class OrderPage extends StatelessWidget {
     );
   }
 
-  Widget _orderDetailItem() {
+  Widget _orderDetailItem(OrderDetail orderDetail) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(kPadding, 0, kPadding, kPadding),
       child: Row(
@@ -101,21 +108,21 @@ class OrderPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               customText(
-                  text: 'Jordna 1 Retro High Tie Dye',
+                  text: orderDetail.name,
                   fontSize: 14,
                   fontWeight: FontWeight.bold),
               const SizedBox(
                 height: 15,
               ),
               customText(
-                  text: 'Nike. Red Grey. 40. Qty1',
+                  text: '${orderDetail.brand} ${orderDetail.color} ${orderDetail.size}     ${orderDetail.quantity}x',
                   fontSize: 14,
                   color: Colors.grey,
                   fontWeight: FontWeight.w300)
             ],
           ),
           customText(
-              text: '\$235.00', fontSize: 14, fontWeight: FontWeight.bold)
+              text: '\$${orderDetail.price.toStringAsFixed(2)}', fontSize: 14, fontWeight: FontWeight.bold)
         ],
       ),
     );
@@ -129,7 +136,7 @@ class OrderPage extends StatelessWidget {
         children: [
           customText(text: title, fontSize: 14, color: Colors.grey),
           customText(
-              text: '\$$price',
+              text: '\$${price.toStringAsFixed(2)}',
               fontSize: isTotal ? 16 : 14,
               fontWeight: FontWeight.w900)
         ],

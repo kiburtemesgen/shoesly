@@ -1,8 +1,11 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
 
-Widget commonFAB(String text, Function() onTap,  double amount, BuildContext context) {
-    return Container(
+Widget commonFAB(String text, String priceText, Function() onTap, double amount,
+    BuildContext context) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
       height: 90,
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
@@ -14,9 +17,11 @@ Widget commonFAB(String text, Function() onTap,  double amount, BuildContext con
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              customText(text: 'Grand Total', fontSize: 12, color: Colors.grey),
+              customText(text: priceText, fontSize: 12, color: Colors.grey),
               customText(
-                  text: '\$$amount', fontSize: 16, fontWeight: FontWeight.w900)
+                  text: '\$${amount.toStringAsFixed(2)}',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900)
             ],
           ),
           Container(
@@ -25,16 +30,12 @@ Widget commonFAB(String text, Function() onTap,  double amount, BuildContext con
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 40.0, vertical: 12.0),
-              child: InkWell(
-        onTap: onTap,
-        child: customText(
-                    text: text,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-      ),
+              child: customText(
+                  text: text, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           )
         ]),
       ),
-    );
-  }
+    ),
+  );
+}

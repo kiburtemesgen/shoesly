@@ -195,7 +195,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       width: 20,
                       height: 20,
                       child: Image.network(
-                          'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Adidas_isologo.svg/640px-Adidas_isologo.svg.png'),
+                          product.brandImage),
                     )),
               ],
             ),
