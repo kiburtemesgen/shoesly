@@ -134,7 +134,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       width: 5,
                     ),
                     customText(
-                      text: '(${widget.product.reviews.length} reviews)',
+                      text: '(${widget.product.reviews} reviews)',
                       fontSize: 11,
                       color: const Color.fromRGBO(183, 183, 183, 1),
                     )
@@ -187,7 +187,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: customText(
-                    text: 'Review(${widget.product.reviews.length})',
+                    text: 'Review(${widget.product.reviews})',
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),

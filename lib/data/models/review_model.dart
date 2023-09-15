@@ -1,5 +1,5 @@
 class ReviewModel {
-  String userId;
+  String productId;
   String userName;
   String userPicture;
   double rating;
@@ -7,7 +7,7 @@ class ReviewModel {
   DateTime createdAt;
 
   ReviewModel({
-    required this.userId,
+    required this.productId,
     required this.userName,
     required this.userPicture,
     required this.rating,
@@ -17,7 +17,7 @@ class ReviewModel {
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
-      userId: json['userId'],
+      productId: json['productId'],
       userName: json['userName'],
       userPicture: json['userPicture'],
       rating: json['rating'].toDouble(),
@@ -28,7 +28,7 @@ class ReviewModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
+      'productId': productId,
       'userName': userName,
       'userPicture': userPicture,
       'rating': rating,

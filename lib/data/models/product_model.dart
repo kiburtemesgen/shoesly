@@ -13,6 +13,7 @@ class ProductModel {
   List<String> colors;
   List<ReviewModel> reviews;
   DateTime createdAt; // Add a DateTime field
+  int totalReviews; // Add the totalReviews field
 
   ProductModel({
     required this.id,
@@ -27,6 +28,7 @@ class ProductModel {
     required this.colors,
     required this.sizes,
     required this.createdAt, // Initialize the DateTime field in the constructor
+    required this.totalReviews, // Initialize the totalReviews field in the constructor
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -43,6 +45,7 @@ class ProductModel {
       colors: List<String>.from(json['colors']),
       sizes: List<int>.from(json['sizes']),
       createdAt: DateTime.parse(json['createdAt']), // Parse the DateTime field
+      totalReviews: json['totalReviews'], // Initialize the totalReviews field
     );
   }
 
@@ -60,6 +63,7 @@ class ProductModel {
       'colors': colors,
       'sizes': sizes,
       'createdAt': createdAt.toIso8601String(), // Convert the DateTime field to a string
+      'totalReviews': totalReviews, // Include the totalReviews field
     };
   }
 }

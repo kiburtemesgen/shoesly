@@ -7,7 +7,7 @@ import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_event.dart';
-import 'package:prior_soft/presentation/cart_page.dart';
+import 'package:prior_soft/presentation/screens/cart_page.dart';
 
 class AddToCartDialog extends StatefulWidget {
   const AddToCartDialog(

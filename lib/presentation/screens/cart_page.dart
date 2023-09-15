@@ -9,7 +9,7 @@ import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_event.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_state.dart';
-import 'package:prior_soft/presentation/order_page.dart';
+import 'package:prior_soft/presentation/screens/order_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});

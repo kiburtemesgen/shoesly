@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
-import 'package:prior_soft/presentation/discover_page.dart';
+import 'package:prior_soft/presentation/blocs/top_reviews_bloc/top_reviews_bloc.dart';
+import 'package:prior_soft/presentation/screens/discover_page.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -14,6 +15,8 @@ class AppWidget extends StatelessWidget {
       providers: [
         BlocProvider<GetProductsBloc>(create: (_) => sl<GetProductsBloc>()),
         BlocProvider<CartBloc>(create: (_) => sl<CartBloc>()),
+        BlocProvider<GetProductsBloc>(create: (_) => sl<GetProductsBloc>()),
+        BlocProvider<TopReviewsBloc>(create: (_) => sl<TopReviewsBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

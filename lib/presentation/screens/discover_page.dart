@@ -11,7 +11,8 @@ import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_event.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_state.dart';
-import 'package:prior_soft/presentation/product_detail_page.dart';
+import 'package:prior_soft/presentation/screens/filter_product_page.dart';
+import 'package:prior_soft/presentation/screens/product_detail_page.dart';
 import 'package:prior_soft/presentation/widgets/cart_icon.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -22,12 +23,15 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  final brandsList = ['All', 'Nike', 'Jordan', 'Adidas', 'Reebok', 'Puma'];
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-      CollectionReference products = FirebaseFirestore.instance.collection('products');
-
+  CollectionReference products =
+      FirebaseFirestore.instance.collection('products');
 
   int brandIndex = 0;
+  List<String> categories = [
+    'All',
+    ...brandsList.map((brand) => brand.name).toList()
+  ];
 
   @override
   void initState() {
@@ -55,13 +59,15 @@ class _DiscoverPageState extends State<DiscoverPage> {
               width: 10,
             ),
             InkWell(
-              onTap: ()async{
-                print('filter button is pressed');
-                ProductService service = ProductService();
-             return products
-          .add(service.productsMock[2].toJson())
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
+              onTap: () async {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => FilterPage()));
+                //       print('filter button is pressed');
+                //       ProductService service = ProductService();
+                //    return products
+                // .add(service.productsMock[2].toJson())
+                // .then((value) => print("User Added"))
+                // .catchError((error) => print("Failed to add user: $error"));
               },
               child: customText(
                   text: 'FILTER',
@@ -156,7 +162,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
       height: 25,
       width: MediaQuery.of(context).size.width,
       child: ListView.builder(
-          itemCount: brandsList.length,
+          itemCount: categories.length,
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
@@ -169,7 +175,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   });
                 },
                 child: customText(
-                    text: brandsList[index],
+                    text: categories[index],
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: brandIndex == index ? Colors.black : Colors.grey),
@@ -182,8 +188,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Widget _itemWidget(ProductModel product, BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return InkWell(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: ((context) => ProductDetailPage(product: product,))));
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: ((context) => ProductDetailPage(
+                      product: product,
+                    ))));
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,8 +220,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     child: SizedBox(
                       width: 20,
                       height: 20,
-                      child: Image.network(
-                          product.brandImage),
+                      child: Image.network(product.brandImage),
                     )),
               ],
             ),

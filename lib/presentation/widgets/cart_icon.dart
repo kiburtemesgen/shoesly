@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/core/constants.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_state.dart';
-import 'package:prior_soft/presentation/cart_page.dart';
+import 'package:prior_soft/presentation/screens/cart_page.dart';
 
 Widget cartIcon() {
   return BlocBuilder<CartBloc, CartState>(
