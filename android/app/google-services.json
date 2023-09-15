@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "862476175762",
+    "firebase_url": "https://note-ddd-bd9f1-default-rtdb.firebaseio.com",
+    "project_id": "note-ddd-bd9f1",
+    "storage_bucket": "note-ddd-bd9f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:862476175762:android:b854dfd354321560ac994b",
+        "android_client_info": {
+          "package_name": "com.example.prior_soft"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "862476175762-p8hulrc5me7m1f60ban1bpafqjl5d8eh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9FdDL30S58xWvKbYVIu3dXFkacrZ568I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "862476175762-p8hulrc5me7m1f60ban1bpafqjl5d8eh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

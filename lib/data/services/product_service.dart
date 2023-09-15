@@ -1,8 +1,47 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/data/models/review_model.dart';
 
 class ProductService {
+  static List<ReviewModel> reviews = [
+          ReviewModel(
+              userId: '123',
+              userName: "Bruno Fernandes",
+              userPicture:
+                  'https://e0.365dm.com/22/03/2048x1152/skysports-bruno-fernandes-manchester-united_5707588.jpg',
+              rating: 4.5,
+              description:
+                  'My Son loved his shoes! The down side was that when it had arrived, the box was smashed in and was all beat up. The shoes did have a scuff/some kind of mark on it.',
+              createdAt: DateTime.now().subtract(const Duration(days: 18))),
+          ReviewModel(
+              userId: '124',
+              userName: "Nas",
+              userPicture:
+                  'https://i.guim.co.uk/img/media/ae0d885416889797174523437719d33bb88467cd/0_0_6000_3602/master/6000.jpg?width=700&quality=85&auto=format&fit=max&s=f3a46269b5eeb7fb1077d0590e000fa4',
+              rating: 5,
+              description:
+                  'My Son loved his shoes! The down side was that when it had arrived, the box was smashed in and was all beat up. The shoes did have a scuff/some kind of mark on it.',
+              createdAt: DateTime.now().subtract(const Duration(days: 10))),
+          ReviewModel(
+              userId: '125',
+              userName: "David Guetta",
+              userPicture:
+                  'https://images.t-online.de/2021/08/90543270v2/612x159:924x693/fit-in/1800x0/david-guetta-er-hat-ueber-50-millionen-verkaufte-tontraeger-und-ueber-10-milliarden-songstreams-zu-verbuchen.jpg',
+              rating: 4.7,
+              description:
+                  'My Son loved his shoes! The down side was that when it had arrived, the box was smashed in and was all beat up. The shoes did have a scuff/some kind of mark on it.',
+              createdAt: DateTime.now()),
+          ReviewModel(
+              userId: '125',
+              userName: "Erling Haaland",
+              userPicture:
+                  'https://upload.wikimedia.org/wikipedia/commons/6/6e/Erling_Haaland_2023_%28cropped-v2%29.jpg',
+              rating: 3.7,
+              description:
+                  'My Son loved his shoes! The down side was that when it had arrived, the box was smashed in and was all beat up. The shoes did have a scuff/some kind of mark on it.',
+              createdAt: DateTime.now().subtract(const Duration(days: 1))),
+        ];
   List<ProductModel> productsMock = [
     // ProductModel(
     //     productId: '1',
@@ -30,19 +69,11 @@ class ProductService {
         description:
             'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
         rating: 3,
-        reviews: [
-          ReviewModel(
-              userId: '123',
-              userName: "Nolan Cadter",
-              userPicture:
-                  'https://e0.365dm.com/22/03/2048x1152/skysports-bruno-fernandes-manchester-united_5707588.jpg',
-              rating: 4.5,
-              description:
-                  'My Son loved his shoes! The down side was that when it had arrived, the box was smashed in and was all beat up. The shoes did have a scuff/some kind of mark on it.',
-              date: DateTime.now())
-        ],
+        reviews: reviews,
         colors: ['Red', 'Blue'],
-        sizes: [39, 40, 41]),
+        sizes: [39, 40, 41],
+        createdAt: DateTime.now()
+        ),
     ProductModel(
         id: '3',
         name: 'Nike Air Jordan 1 low',
@@ -56,9 +87,11 @@ class ProductService {
         description:
             'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
         rating: 3,
-        reviews: [],
+        reviews: reviews,
         colors: ['White', 'Green'],
-        sizes: [39, 40]),
+        sizes: [39, 40],
+        createdAt: DateTime.now()
+        ),
     ProductModel(
         id: '4',
         name: 'Nike Air Jordan 1 low',
@@ -72,12 +105,38 @@ class ProductService {
         description:
             'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
         rating: 4 / 5,
-        reviews: [],
+        reviews: reviews,
         colors: ['Black', 'Green', 'Red'],
-        sizes: [40]),
+        sizes: [40],
+        createdAt: DateTime.now()
+        ),
   ];
   Future<Either<Error, List<ProductModel>>> getProducts() async {
-    await Future.delayed(Duration(seconds: 2));
-    return Right(productsMock);
+    // await Future.delayed(Duration(seconds: 2));
+          return Right(productsMock);
+
+    // List<ProductModel> products = [];
+    // Query query = FirebaseFirestore.instance.collection('products');
+    
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection('products')
+  //         .where('price', isGreaterThan: 200)
+          
+  //         .get()
+  //         .then((value) {
+  //       for (var product in value.docs) {
+  //         products.add(ProductModel.fromJson(product.data()));
+  //       }
+  //     }).catchError((error) {
+  //       print('the error from getProducts response is: ${error.toString()}');
+  //       return Left(Error());
+  //     });
+  //     return Right(products);
+  //   } catch (e) {
+  //     return Left(Error());
+  //   }
+
+    
   }
 }

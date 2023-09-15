@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/core/colors.dart';
@@ -5,6 +6,7 @@ import 'package:prior_soft/core/constants.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
 import 'package:prior_soft/core/widgets/error_page.dart';
 import 'package:prior_soft/data/models/product_model.dart';
+import 'package:prior_soft/data/services/product_service.dart';
 import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_event.dart';
@@ -21,6 +23,9 @@ class DiscoverPage extends StatefulWidget {
 
 class _DiscoverPageState extends State<DiscoverPage> {
   final brandsList = ['All', 'Nike', 'Jordan', 'Adidas', 'Reebok', 'Puma'];
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference products = FirebaseFirestore.instance.collection('products');
+
 
   int brandIndex = 0;
 
@@ -49,10 +54,20 @@ class _DiscoverPageState extends State<DiscoverPage> {
             const SizedBox(
               width: 10,
             ),
-            customText(
-                text: 'FILTER',
-                fontWeight: FontWeight.w600,
-                color: Colors.white)
+            InkWell(
+              onTap: ()async{
+                print('filter button is pressed');
+                ProductService service = ProductService();
+             return products
+          .add(service.productsMock[2].toJson())
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+              },
+              child: customText(
+                  text: 'FILTER',
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white),
+            )
           ]),
         ),
       ),
@@ -218,7 +233,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 size: 15,
               ),
               customText(
-                text: '4.4',
+                text: product.rating.toString(),
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
               ),

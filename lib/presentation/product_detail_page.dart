@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prior_soft/core/colors.dart';
 import 'package:prior_soft/core/constants.dart';
+import 'package:prior_soft/core/utils/format_review_date.dart';
 import 'package:prior_soft/core/utils/get_color_from_string.dart';
 import 'package:prior_soft/core/widgets/common_appbar.dart';
 import 'package:prior_soft/core/widgets/common_fab.dart';
@@ -373,7 +374,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         fontSize: 12,
                         fontWeight: FontWeight.w900),
                     customText(
-                        text: 'Today',
+                        text: formatReviewDate(review.createdAt),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey)
