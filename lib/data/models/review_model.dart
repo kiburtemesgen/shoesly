@@ -22,7 +22,7 @@ class ReviewModel {
       userPicture: json['userPicture'],
       rating: json['rating'].toDouble(),
       description: json['description'],
-      createdAt: DateTime.parse(json['date']),
+      createdAt: DateTime.parse(json['createdAt']),
     );
   }
 

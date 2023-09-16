@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:prior_soft/data/models/filter_product_model.dart';
+import 'package:prior_soft/core/constants.dart';
+import 'package:prior_soft/data/models/filter_product_request.dart';
 import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/data/models/review_model.dart';
 
 class ProductService {
+    DocumentSnapshot? lastDocument;
   static List<ReviewModel> reviews = [
     ReviewModel(
         productId: '123',
@@ -74,63 +76,113 @@ class ProductService {
         colors: ['Red', 'Blue'],
         sizes: [39, 40, 41],
         totalReviews: reviews.length,
+        gender: 'Male',
         createdAt: DateTime.now()),
+
     ProductModel(
-        id: '3',
-        name: 'Nike Air Jordan 1 low',
-        price: 240,
+        id: '389',
+        name: 'Adidas Womens Superstar',
+        price: 2199,
         image: [
-          'https://grailify.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN0lzQXc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--821bc8dc97ccd04ea0e0247c5cdbd58f5e2c36ef/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmtDSUFOcEFpQURPZ3h4ZFdGc2FYUjVhVjg9IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--ea1da7d273fb4fac2f3bf305727b365ca4d6c39a/Image%201'
+          'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/4e894c2b76dd4c8e9013aafc016047af_9366/Superstar_Shoes_White_FV3284_01_standard.jpg'
         ],
-        brand: 'Nike',
+        brand: 'Adidas',
         brandImage:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Adidas_isologo.svg/640px-Adidas_isologo.svg.png',
+            'https://upload.wikimedia.org/wikipedia/commons/f/fe/Logo_Adidas.png',
         description:
-            'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
-        rating: 3,
-        reviews: reviews,
+            'Adidas is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
+        rating: 2.5,
+        reviews: [],
         colors: ['White', 'Green'],
         sizes: [39, 40],
         totalReviews: reviews.length,
+        gender: 'Female',
         createdAt: DateTime.now()),
     ProductModel(
-        id: '4',
-        name: 'Nike Air Jordan 1 low',
-        price: 240,
-        image: [
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAwvTzMRieP6-Bic97Azsw7hpgCv47wd-IwQ&usqp=CAU'
-        ],
-        brand: 'Nike',
+        id: '65',
+        name: 'Puma Ca Pro Classic Lace Up',
+        price: 29,
+        image: ['https://i.ebayimg.com/images/g/PdgAAOSwuClkkNsn/s-l1200.webp'],
+        brand: 'Puma',
         brandImage:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Adidas_isologo.svg/640px-Adidas_isologo.svg.png',
+            'https://upload.wikimedia.org/wikipedia/commons/8/88/Puma-Logo.png',
         description:
-            'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
-        rating: 4 / 5,
+            'Puma is a type or brand of basketball shoes produced by Puma, Inc. since 1984. In the name “Air” means air cushion technology. Puma means Puma ',
+        rating: 4.5,
         reviews: reviews,
-        colors: ['Black', 'Green', 'Red'],
-        sizes: [40],
+        colors: [
+          'Black',
+          'Green',
+        ],
+        sizes: [40, 41],
         totalReviews: reviews.length,
+        gender: 'Female',
         createdAt: DateTime.now()),
   ];
-  Future<Either<Error, List<ProductModel>>> getProducts() async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> snapshot =
-          await FirebaseFirestore.instance.collection('products').get();
+Future<Either<Error, List<ProductModel>>> getProducts(int pageNumber) async {
+  print('the current pageNumber is: $pageNumber');
+  try {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('products')
+        .orderBy('rating', descending: true)
+        .limit(totalProducts);
 
-      List<ProductModel> products = snapshot.docs
-          .map((doc) => ProductModel.fromJson(doc.data()))
-          .toList();
+    if (pageNumber > 1) {
+      DocumentSnapshot<Map<String, dynamic>> lastDocument =
+          await FirebaseFirestore.instance
+              .collection('products')
+              .orderBy('rating', descending: true)
+              .limit(totalProducts)
+              .get()
+              .then((snapshot) => snapshot.docs.last);
 
-      return Right(products);
-    } catch (e) {
-      print('The error from getProducts response is: ${e.toString()}');
-      return Left(Error());
+      query = query.startAfterDocument(lastDocument);
     }
+
+    QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+
+    List<ProductModel> products = snapshot.docs
+        .map((doc) => ProductModel.fromJson(doc.data()))
+        .toList();
+
+    return Right(products);
+  } catch (e) {
+    print('The error from getProducts response is: ${e.toString()}');
+    return Left(Error());
   }
-  Future<Either<Error, List<ProductModel>>> getFilteredProducts(FilterProductModel filterProductModel) async {
+}
+
+  Future<Either<Error, List<ProductModel>>> getFilteredProducts(
+      FilterProductRequest filterProductRequest) async {
     try {
-      QuerySnapshot<Map<String, dynamic>> snapshot =
-          await FirebaseFirestore.instance.collection('products').get();
+      Query<Map<String, dynamic>> query =
+          FirebaseFirestore.instance.collection('products');
+
+      if (filterProductRequest.brand != 'All') {
+        query = query.where('brand', isEqualTo: filterProductRequest.brand);
+      }
+
+      query = query.where('price',
+          isGreaterThanOrEqualTo: filterProductRequest.priceMin);
+
+      query = query.where('price',
+          isLessThanOrEqualTo: filterProductRequest.priceMax);
+
+      query = query.where('gender', isEqualTo: filterProductRequest.gender);
+
+      query = query.where('color', isEqualTo: filterProductRequest.color);
+      if (filterProductRequest.option == ProductSortOption.highestPrice) {
+        query = query.orderBy('price', descending: false);
+      } else if (filterProductRequest.option == ProductSortOption.mostRecent) {
+        query = query.orderBy('timestamp', descending: true);
+      } else if (filterProductRequest.option == ProductSortOption.lowestPrice) {
+        query = query.orderBy('price');
+      }
+      // else if (filterProductRequest.option == ProductSortOption.highestReview) {
+      //   query = query.orderBy('reviews', descending: true);
+      // }
+
+      QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
 
       List<ProductModel> products = snapshot.docs
           .map((doc) => ProductModel.fromJson(doc.data()))

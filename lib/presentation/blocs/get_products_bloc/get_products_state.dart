@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:prior_soft/data/models/filter_product_model.dart';
+import 'package:prior_soft/data/models/filter_product_request.dart';
 import 'package:prior_soft/data/models/product_model.dart';
 
 abstract class GetProductsState extends Equatable {}
@@ -21,14 +21,16 @@ class GetProductsError extends GetProductsState {
 
 class GetProductsSuccess extends GetProductsState {
   final List<ProductModel> products;
+  final bool isLoading;
   final int pageIndex;
-  final FilterProductModel? filterProductModel;
+  final FilterProductRequest? filterProductRequest;
 
   GetProductsSuccess(
       {required this.products,
+      required this.isLoading,
       required this.pageIndex,
-      required this.filterProductModel});
+      required this.filterProductRequest});
 
   @override
-  List<Object?> get props => [products, pageIndex, filterProductModel];
+  List<Object?> get props => [products, isLoading, pageIndex, filterProductRequest];
 }

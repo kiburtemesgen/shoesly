@@ -32,12 +32,26 @@ class _DiscoverPageState extends State<DiscoverPage> {
     'All',
     ...brandsList.map((brand) => brand.name).toList()
   ];
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
     sl<GetProductsBloc>().add(GetProducts());
+
+    scrollController.addListener(() {
+        if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      var blocState = sl<GetProductsBloc>().state;
+      if (blocState is GetProductsSuccess) {
+        if (!blocState.isLoading) {
+          sl<GetProductsBloc>().add(LoadMoreProducts());
+        }
+      }
+    }
+    });
+  
   }
 
   @override
@@ -62,12 +76,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
               onTap: () async {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => FilterPage()));
-                //       print('filter button is pressed');
-                //       ProductService service = ProductService();
-                //    return products
-                // .add(service.productsMock[2].toJson())
-                // .then((value) => print("User Added"))
-                // .catchError((error) => print("Failed to add user: $error"));
+                      print('filter button is pressed');
+                      ProductService service = ProductService();
+                      
+                   return products
+                .add(service.productsMock[1].toJson())
+                .then((value) => print("User Added"))
+                .catchError((error) => print("Failed to add user: $error"));
               },
               child: customText(
                   text: 'FILTER',
@@ -117,6 +132,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                           ? ErrorPage(onRetry: () {})
                           : state is GetProductsSuccess
                               ? CustomScrollView(
+                                  controller: scrollController,
                                   primary: false,
                                   slivers: <Widget>[
                                     SliverPadding(
@@ -135,6 +151,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
                                                         context),
                                                   )).toList()),
                                     ),
+                                    // state.isLoading
+                                    //     ? const Center(
+                                    //         child: CircularProgressIndicator(),
+                                    //       )
+                                    //     : const SizedBox()
                                   ],
                                 )
                               : const SizedBox();

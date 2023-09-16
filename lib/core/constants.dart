@@ -37,4 +37,4 @@ enum ProductSortOption {
   highestReview,
 }
 
-const totalProducts = 10;
+const totalProducts = 6;
