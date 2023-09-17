@@ -6,7 +6,6 @@ import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/data/models/review_model.dart';
 
 class ProductService {
-    DocumentSnapshot? lastDocument;
   static List<ReviewModel> reviews = [
     ReviewModel(
         productId: '123',
@@ -60,20 +59,19 @@ class ProductService {
     //     review: [],
     //     size: [39, 40, 41, 42]),
     ProductModel(
-        id: '2',
-        name: 'Nike Air Jordan 4',
-        price: 240,
+        id: '9119',
+        name: 'Nike Air Max 270 Men\'s Shoes',
+        price: 300,
         image: [
-          'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/ef7d1e6b-bac1-4da9-89f1-90b9e9311e39/air-jordan-3-retro-shoes-TJf2lm.png'
+          'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/41e147d8-6410-4b75-b46c-567b0d5903ca/air-max-270-mens-shoes-KkLcGR.png'
         ],
         brand: 'Nike',
-        brandImage:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Adidas_isologo.svg/640px-Adidas_isologo.svg.png',
+        brandImage: 'https://pngimg.com/uploads/nike/nike_PNG12.png',
         description:
             'Air Jordan is a type or brand of basketball shoes produced by Nike, Inc. since 1984. In the name “Air” means air cushion technology. “Jordan” means Michael ',
-        rating: 3,
+        rating: 4.6,
         reviews: reviews,
-        colors: ['Red', 'Blue'],
+        colors: ['Black', 'Blue, Red'],
         sizes: [39, 40, 41],
         totalReviews: reviews.length,
         gender: 'Male',
@@ -119,70 +117,117 @@ class ProductService {
         gender: 'Female',
         createdAt: DateTime.now()),
   ];
-Future<Either<Error, List<ProductModel>>> getProducts(int pageNumber) async {
-  print('the current pageNumber is: $pageNumber');
-  try {
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('products')
-        .orderBy('rating', descending: true)
-        .limit(totalProducts);
 
-    if (pageNumber > 1) {
-      DocumentSnapshot<Map<String, dynamic>> lastDocument =
-          await FirebaseFirestore.instance
-              .collection('products')
-              .orderBy('rating', descending: true)
-              .limit(totalProducts)
-              .get()
-              .then((snapshot) => snapshot.docs.last);
+  DocumentSnapshot? lastDocument;
 
-      query = query.startAfterDocument(lastDocument);
+  Future<Either<Error, List<ProductModel>>> getProducts(
+      int pageNumber, String brand, int total) async {
+    print('the current pageNumber is: $pageNumber');
+    print('the brand is: $brand');
+    try {
+      if (pageNumber == 0) {
+        lastDocument = null;
+      }
+      final collectionRef = FirebaseFirestore.instance.collection('products');
+
+      Query<Map<String, dynamic>> query = collectionRef;
+
+      if (brand != 'All') {
+        query = query.where('brand', isEqualTo: brand);
+      }
+
+      if (pageNumber > 0) {
+        query = query.startAfterDocument(lastDocument!);
+      }
+
+      query = query.limit(totalProducts);
+
+      QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+
+      if (snapshot.docs.isEmpty) {
+        return const Right([]);
+      }
+
+      lastDocument = snapshot.docs.last;
+
+      List<ProductModel> products = snapshot.docs
+          .map((doc) => ProductModel.fromJson(doc.data()))
+          .toList();
+
+      return Right(products);
+    } catch (e) {
+      print('The error from getProducts response is: ${e.toString()}');
+      return Left(Error());
     }
-
-    QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
-
-    List<ProductModel> products = snapshot.docs
-        .map((doc) => ProductModel.fromJson(doc.data()))
-        .toList();
-
-    return Right(products);
-  } catch (e) {
-    print('The error from getProducts response is: ${e.toString()}');
-    return Left(Error());
   }
-}
 
   Future<Either<Error, List<ProductModel>>> getFilteredProducts(
-      FilterProductRequest filterProductRequest) async {
+      FilterProductRequest filterProductRequest, int pageNumber) async {
+    print('the color: ${filterProductRequest.color}');
+    print('the brand: ${filterProductRequest.brand}');
+    print('the gender: ${filterProductRequest.gender}');
+    print('the minPrice: ${filterProductRequest.priceMin}');
+    print('the maxPrice: ${filterProductRequest.priceMax}');
+    print('the page number: ${pageNumber}');
     try {
+      if (pageNumber == 0) {
+        lastDocument = null;
+      }
+
       Query<Map<String, dynamic>> query =
           FirebaseFirestore.instance.collection('products');
 
-      if (filterProductRequest.brand != 'All') {
+      if (filterProductRequest.brand != null) {
         query = query.where('brand', isEqualTo: filterProductRequest.brand);
       }
 
-      query = query.where('price',
-          isGreaterThanOrEqualTo: filterProductRequest.priceMin);
-
-      query = query.where('price',
-          isLessThanOrEqualTo: filterProductRequest.priceMax);
-
-      query = query.where('gender', isEqualTo: filterProductRequest.gender);
-
-      query = query.where('color', isEqualTo: filterProductRequest.color);
-      if (filterProductRequest.option == ProductSortOption.highestPrice) {
-        query = query.orderBy('price', descending: false);
-      } else if (filterProductRequest.option == ProductSortOption.mostRecent) {
-        query = query.orderBy('timestamp', descending: true);
-      } else if (filterProductRequest.option == ProductSortOption.lowestPrice) {
-        query = query.orderBy('price');
+      if (filterProductRequest.priceMin != null) {
+        query = query.where('price',
+            isGreaterThanOrEqualTo: filterProductRequest.priceMin);
       }
-      // else if (filterProductRequest.option == ProductSortOption.highestReview) {
-      //   query = query.orderBy('reviews', descending: true);
-      // }
+
+      if (filterProductRequest.priceMax != null) {
+        query = query.where('price',
+            isLessThanOrEqualTo: filterProductRequest.priceMax);
+      }
+
+      if (filterProductRequest.gender != null) {
+        query = query.where('gender', isEqualTo: filterProductRequest.gender);
+      }
+
+      if (filterProductRequest.color != null) {
+        query = query
+            .where('colors', arrayContainsAny: [filterProductRequest.color]);
+      }
+
+      if (filterProductRequest.option != null) {
+        if (filterProductRequest.option == ProductSortOption.highestPrice) {
+          query = query.orderBy('price', descending: true);
+        } else if (filterProductRequest.option ==
+            ProductSortOption.mostRecent) {
+          query = query.orderBy('createdAt', descending: true);
+        } else if (filterProductRequest.option ==
+            ProductSortOption.lowestPrice) {
+          query = query.orderBy('price');
+        } else if (filterProductRequest.option ==
+            ProductSortOption.highestReview) {
+          query = query.orderBy('reviews', descending: true);
+        }
+      } 
+
+      if (pageNumber > 0) {
+        query = query.startAfterDocument(lastDocument!);
+      }
+
+      query = query.limit(totalProducts);
 
       QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+
+      if (snapshot.docs.isEmpty) {
+        return const Right([]);
+      }
+
+      lastDocument = snapshot.docs.last;
 
       List<ProductModel> products = snapshot.docs
           .map((doc) => ProductModel.fromJson(doc.data()))

@@ -17,7 +17,7 @@ final brandsList = [
       icon:
           'https://upload.wikimedia.org/wikipedia/commons/f/fe/Logo_Adidas.png'),
   BrandModel(
-      name: 'Rebook',
+      name: 'Reebok',
       icon:
           'https://logos-world.net/wp-content/uploads/2020/04/Reebok-Symbol.png'),
 ];

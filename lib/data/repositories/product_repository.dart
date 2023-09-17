@@ -5,8 +5,8 @@ import 'package:prior_soft/data/models/review_model.dart';
 import 'package:prior_soft/data/services/product_service.dart';
 
 abstract class ProductRepository {
-  Future<Either<Error, List<ProductModel>>> getProducts(int pageNumber);
-  Future<Either<Error, List<ProductModel>>> getFilteredProducts(FilterProductRequest filterProductRequest);
+  Future<Either<Error, List<ProductModel>>> getProducts(int pageNumber, String brand, int total);
+  Future<Either<Error, List<ProductModel>>> getFilteredProducts(FilterProductRequest filterProductRequest, int pageNumber);
   Future<Either<Error, List<ReviewModel>>> getReviews(String productId, int rating);
   Future<Either<Error, List<ReviewModel>>> getTopReviews(String productId);
 }
@@ -19,14 +19,14 @@ class ProductRepositoryImpl extends ProductRepository {
   ProductRepositoryImpl({required this.productService});
 
   @override
-  Future<Either<Error, List<ProductModel>>> getProducts(int pageNumber) async {
-    final response = await productService.getProducts(pageNumber);
+  Future<Either<Error, List<ProductModel>>> getProducts(int pageNumber, String brand, total) async {
+    final response = await productService.getProducts(pageNumber, brand, total);
     return response.fold((error) => Left(error), (result) => Right(result));
   }
 
   @override
-  Future<Either<Error, List<ProductModel>>> getFilteredProducts(FilterProductRequest filterProductRequest) async {
-    final response = await productService.getFilteredProducts(filterProductRequest);
+  Future<Either<Error, List<ProductModel>>> getFilteredProducts(FilterProductRequest filterProductRequest, int pageNumber) async {
+    final response = await productService.getFilteredProducts(filterProductRequest, pageNumber);
     return response.fold((error) => Left(error), (result) => Right(result));
   }
   

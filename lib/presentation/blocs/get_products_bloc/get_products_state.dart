@@ -22,15 +22,17 @@ class GetProductsError extends GetProductsState {
 class GetProductsSuccess extends GetProductsState {
   final List<ProductModel> products;
   final bool isLoading;
-  final int pageIndex;
+  final bool isMaxReached;
+  final String? brand;
   final FilterProductRequest? filterProductRequest;
 
   GetProductsSuccess(
       {required this.products,
       required this.isLoading,
-      required this.pageIndex,
+     required this.isMaxReached,
+      this.brand,
       required this.filterProductRequest});
 
   @override
-  List<Object?> get props => [products, isLoading, pageIndex, filterProductRequest];
+  List<Object?> get props => [products, isLoading, isMaxReached, brand, filterProductRequest];
 }

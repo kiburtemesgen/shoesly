@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
-import 'package:prior_soft/data/models/filter_product_model.dart';
+import 'package:prior_soft/data/models/filter_product_request.dart';
 
 class FilterProductsState extends Equatable {
-  final FilterProductModel filterProductModel;
-  const FilterProductsState({required this.filterProductModel});
+  final FilterProductRequest filterProductRequest;
+  final int filterCount;
+
+  const FilterProductsState({required this.filterProductRequest, required this.filterCount});
 
   @override
-  List<Object?> get props => [filterProductModel];
+  List<Object?> get props => [filterProductRequest];
 }

@@ -8,8 +8,10 @@ import 'package:prior_soft/core/widgets/common_fab.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
 import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/data/models/review_model.dart';
+import 'package:prior_soft/presentation/screens/review_page.dart';
 import 'package:prior_soft/presentation/widgets/add_to_cart_dialog.dart';
 import 'package:prior_soft/presentation/widgets/cart_icon.dart';
+import 'package:prior_soft/presentation/widgets/review_item.dart';
 
 class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({super.key, required this.product});
@@ -28,6 +30,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     super.initState();
     selectedSize = widget.product.sizes.first;
     selectedColor = widget.product.colors.first;
+  }
+
+  List<ReviewModel> getTopReviews(List<ReviewModel> reviews) {
+    reviews.sort((a, b) => b.rating.compareTo(a.rating));
+
+    return reviews.take(3).toList();
   }
 
   @override
@@ -91,7 +99,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: customText(
                     text: widget.product.name,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.bold,
+                    textOverflow: TextOverflow.ellipsis),
               ),
               const SizedBox(
                 height: 2,
@@ -126,7 +135,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       size: 15,
                     ),
                     customText(
-                      text: '4.4',
+                      text: widget.product.rating.toString(),
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                     ),
@@ -134,7 +143,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       width: 5,
                     ),
                     customText(
-                      text: '(${widget.product.reviews} reviews)',
+                      text: '(${widget.product.reviews.length} reviews)',
                       fontSize: 11,
                       color: const Color.fromRGBO(183, 183, 183, 1),
                     )
@@ -187,7 +196,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: customText(
-                    text: 'Review(${widget.product.reviews})',
+                    text: 'Review(${widget.product.reviews.length})',
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
@@ -196,9 +205,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
               ListView.builder(
                 shrinkWrap: true,
-                itemCount: widget.product.reviews.length,
+                primary: false,
+                itemCount: 3,
                 itemBuilder: (context, index) {
-                  return _reviewItem(widget.product.reviews[index]);
+                  return reviewItem(
+                      getTopReviews(widget.product.reviews)[index]);
                 },
               ),
               const SizedBox(
@@ -206,17 +217,26 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: kPadding),
-                child: Container(
-                  width: size.width,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(width: 0.5, color: Colors.grey)),
-                  child: Center(
-                      child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: customText(
-                        text: 'SEE ALL REVIEWS', fontWeight: FontWeight.bold),
-                  )),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ReviewPage(
+                              reviews: widget.product.reviews,
+                              rating: widget.product.rating,
+                            )));
+                  },
+                  child: Container(
+                    width: size.width,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(width: 0.5, color: Colors.grey)),
+                    child: Center(
+                        child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: customText(
+                          text: 'SEE ALL REVIEWS', fontWeight: FontWeight.bold),
+                    )),
+                  ),
                 ),
               ),
               Container(
@@ -343,86 +363,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _reviewItem(ReviewModel review) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(180),
-            child: SizedBox(
-              height: 40,
-              width: 40,
-              child: Image.network(
-                review.userPicture,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    customText(
-                        text: review.userName,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900),
-                    customText(
-                        text: formatReviewDate(review.createdAt),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey)
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                customText(text: review.description)
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
+
 
   void _showAddToCartDialog(BuildContext context) {
     showModalBottomSheet(

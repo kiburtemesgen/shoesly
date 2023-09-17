@@ -32,26 +32,30 @@ class _DiscoverPageState extends State<DiscoverPage> {
     'All',
     ...brandsList.map((brand) => brand.name).toList()
   ];
+  int pageNumber = 0;
   ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    sl<GetProductsBloc>().add(GetProducts());
+    sl<GetProductsBloc>().add(GetProducts(brand: 'All', total: 0));
 
     scrollController.addListener(() {
-        if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      var blocState = sl<GetProductsBloc>().state;
-      if (blocState is GetProductsSuccess) {
-        if (!blocState.isLoading) {
-          sl<GetProductsBloc>().add(LoadMoreProducts());
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        var productsState = sl<GetProductsBloc>().state;
+        if (productsState is GetProductsSuccess) {
+          if (!productsState.isLoading && !productsState.isMaxReached) {
+            pageNumber++;
+            sl<GetProductsBloc>().add(LoadMoreProducts(
+                pageNumber: pageNumber,
+                brand: 'All',
+                total: productsState.products.length));
+          }
         }
       }
-    }
     });
-  
   }
 
   @override
@@ -76,13 +80,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
               onTap: () async {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => FilterPage()));
-                      print('filter button is pressed');
-                      ProductService service = ProductService();
-                      
-                   return products
-                .add(service.productsMock[1].toJson())
-                .then((value) => print("User Added"))
-                .catchError((error) => print("Failed to add user: $error"));
+                print('filter button is pressed');
+                // ProductService service = ProductService();
+
+                // return products
+                //     .add(service.productsMock[0].toJson())
+                //     .then((value) => print("User Added"))
+                //     .catchError((error) => print("Failed to add user: $error"));
               },
               child: customText(
                   text: 'FILTER',
@@ -193,6 +197,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 onTap: () {
                   setState(() {
                     brandIndex = index;
+                    sl<GetProductsBloc>()
+                        .add(GetProducts(brand: categories[index], total: 0)); //Fetch by brand
+                        pageNumber = 0;  //reset the page number
                   });
                 },
                 child: customText(
