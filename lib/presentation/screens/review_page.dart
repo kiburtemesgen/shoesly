@@ -17,20 +17,20 @@ class ReviewPage extends StatefulWidget {
 
 class _ReviewPageState extends State<ReviewPage> {
   int selectedRatingIndex = 0;
-  List<ReviewModel> reivewList = [];
+  List<ReviewModel> reviewList = [];
   List<String> ratingList = ['All', '1', '2', '3', '4', '5'];
   @override
   void initState() {
     super.initState();
-    reivewList = widget.reviews;
+    reviewList = widget.reviews;
   }
 
   List<ReviewModel> _filterReview(String query, List<ReviewModel> reviews) {
-    print('the review: ${reviews[0].rating.toInt() == 5}');
     List<ReviewModel> revList = [];
     if (query != 'All') {
-      reviews = reviews
-          .where((review) => ((review.rating).toInt() + 1) == int.parse(query))
+      revList = reviews
+          .where((review)  {
+            return ((review.rating).toInt()) == int.parse(query);})
           .toList();
     } else {
       revList = reviews;
@@ -66,9 +66,9 @@ class _ReviewPageState extends State<ReviewPage> {
           const SizedBox(height: 25,),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: _filterReview(ratingList[selectedRatingIndex], widget.reviews).length,
+            itemCount: reviewList.length,
             itemBuilder: (context, index){
-              return reviewItem(_filterReview(ratingList[selectedRatingIndex], widget.reviews)[index]);
+              return reviewItem(reviewList[index]);
           })
         ],
       )),
@@ -92,6 +92,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   onTap: () {
                     setState(() {
                       selectedRatingIndex = index;
+                      reviewList = _filterReview(ratingList[selectedRatingIndex], widget.reviews);
                     });
                   },
                   child: customText(
