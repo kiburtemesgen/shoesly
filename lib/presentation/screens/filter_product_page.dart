@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/core/constants.dart';
 import 'package:prior_soft/core/widgets/common_button.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
-import 'package:prior_soft/data/models/filter_product_request.dart';
 import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/filter_products_bloc/filter_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/filter_products_bloc/filter_products_event.dart';
@@ -11,6 +10,7 @@ import 'package:prior_soft/presentation/blocs/filter_products_bloc/filter_produc
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_event.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
+// ignore: depend_on_referenced_packages
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:intl/intl.dart';
 
@@ -59,7 +59,7 @@ class _FilterPageState extends State<FilterPage> {
     return BlocBuilder<FilterProductsBloc, FilterProductsState>(
       builder: (context, state) {
         return Scaffold(
-          floatingActionButton: Container(
+          floatingActionButton: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 80,
             child: Center(
@@ -161,8 +161,7 @@ class _FilterPageState extends State<FilterPage> {
                             });
                             sl<FilterProductsBloc>().add(FilterBySortOption(
                                 option: ProductSortOption.values[index]));
-                            print(
-                                'the current state of filter products state: ${state.filterProductRequest.toMap()}');
+
                           });
                         }),
                   ),
