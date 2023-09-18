@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:prior_soft/core/colors.dart';
 import 'package:prior_soft/core/constants.dart';
-import 'package:prior_soft/core/utils/format_review_date.dart';
 import 'package:prior_soft/core/utils/get_color_from_string.dart';
 import 'package:prior_soft/core/widgets/common_appbar.dart';
 import 'package:prior_soft/core/widgets/common_fab.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
+import 'package:prior_soft/core/widgets/rating_widget.dart';
 import 'package:prior_soft/data/models/product_model.dart';
 import 'package:prior_soft/data/models/review_model.dart';
 import 'package:prior_soft/presentation/screens/review_page.dart';
@@ -22,20 +22,22 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  late int selectedSize;
-  late String selectedColor;
+  late int selectedSizeIndex = 0;
+  late int selectedColorIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    selectedSize = widget.product.sizes.first;
-    selectedColor = widget.product.colors.first;
   }
 
   List<ReviewModel> getTopReviews(List<ReviewModel> reviews) {
-    reviews.sort((a, b) => b.rating.compareTo(a.rating));
+    if (reviews.isNotEmpty) {
+      reviews.sort((a, b) => b.rating.compareTo(a.rating));
 
-    return reviews.take(3).toList();
+      return reviews.take(3).toList();
+    } else {
+      return [];
+    }
   }
 
   @override
@@ -109,31 +111,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
-                    const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 15,
-                    ),
+                    ratingWidget(widget.product.rating),
                     customText(
                       text: widget.product.rating.toString(),
                       fontSize: 11,
@@ -171,7 +149,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       itemBuilder: (context, index) {
                         return _showSizeItem(
                             widget.product.sizes[index].toString(),
-                            index == widget.product.sizes.indexOf(selectedSize),
+                            index == selectedSizeIndex,
                             index);
                       }),
                 ),
@@ -206,7 +184,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ListView.builder(
                 shrinkWrap: true,
                 primary: false,
-                itemCount: 3,
+                itemCount: getTopReviews(widget.product.reviews).length,
                 itemBuilder: (context, index) {
                   return reviewItem(
                       getTopReviews(widget.product.reviews)[index]);
@@ -225,18 +203,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               rating: widget.product.rating,
                             )));
                   },
-                  child: Container(
-                    width: size.width,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(width: 0.5, color: Colors.grey)),
-                    child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: customText(
-                          text: 'SEE ALL REVIEWS', fontWeight: FontWeight.bold),
-                    )),
-                  ),
+                  child: widget.product.reviews.isEmpty
+                      ? const SizedBox()
+                      : Container(
+                          width: size.width,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25),
+                              border:
+                                  Border.all(width: 0.5, color: Colors.grey)),
+                          child: Center(
+                              child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: customText(
+                                text: 'SEE ALL REVIEWS',
+                                fontWeight: FontWeight.bold),
+                          )),
+                        ),
                 ),
               ),
               Container(
@@ -301,13 +283,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 return InkWell(
                     onTap: () {
                       setState(() {
-                        selectedColor = colors[index];
+                        selectedColorIndex = index;
                       });
                     },
-                    child: _colorItem(
-                        getColorFromString(colors[index]),
-                        colors.indexOf(selectedColor) == index,
-                        colors[index].toLowerCase() == 'white'));
+                    child: _colorItem(getColorFromString(colors[index]),
+                        selectedColorIndex == index, colors[index] == 'White'));
               }),
         ),
       ),
@@ -340,7 +320,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return InkWell(
       onTap: () {
         setState(() {
-          selectedSize = index;
+          selectedSizeIndex = index;
         });
       },
       child: Padding(
@@ -363,8 +343,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-
-
   void _showAddToCartDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -384,8 +362,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         topRight: Radius.circular(25.0))),
                 child: AddToCartDialog(
                   product: widget.product,
-                  selectedColor: selectedColor,
-                  selectedSize: selectedSize,
+                  selectedColor: widget.product.colors[selectedColorIndex],
+                  selectedSize: widget.product.sizes[selectedSizeIndex],
                 )),
           ),
         );
