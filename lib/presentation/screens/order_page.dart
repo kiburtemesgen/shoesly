@@ -6,14 +6,16 @@ import 'package:prior_soft/core/widgets/common_fab.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
 import 'package:prior_soft/data/models/order_model.dart';
 
+
 class OrderPage extends StatelessWidget {
-  OrderPage({super.key});
+  const OrderPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final order = getOrderFromCart();
     return Scaffold(
-      floatingActionButton: commonFAB('PAYMENT', 'Grand Total', () {}, order.total, context),
+      floatingActionButton: commonFAB('PAYMENT', 'Grand Total', () {
+      }, order.total, context),
       appBar: commonAppBar(
           leading: IconButton(
               onPressed: () {
