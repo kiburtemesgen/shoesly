@@ -222,13 +222,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
               children: [
                 Align(
                   alignment: Alignment.center,
-                  child: Container(
-                    height: size.width * 0.4,
-                    decoration: BoxDecoration(
-                        color: ColorConst.greyPrimary,
-                        image: DecorationImage(
-                            image: NetworkImage(product.image[0]),
-                            fit: BoxFit.cover)),
+                  child: Hero(
+                    tag: product.id,
+                    child: Container(
+                      height: size.width * 0.4,
+                      decoration: BoxDecoration(
+                          color: ColorConst.greyPrimary,
+                          image: DecorationImage(
+                              image: NetworkImage(product.image[0]),
+                              fit: BoxFit.cover)),
+                    ),
                   ),
                 ),
                 Positioned(

@@ -73,13 +73,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       children: [
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: ColorConst.greyPrimary,
-                                image: DecorationImage(
-                                    image: NetworkImage(
-                                        widget.product.image.first),
-                                    fit: BoxFit.cover)),
+                          child: Hero(
+                            tag: widget.product.id,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: ColorConst.greyPrimary,
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                          widget.product.image.first),
+                                      fit: BoxFit.cover)),
+                            ),
                           ),
                         ),
                         Positioned(
