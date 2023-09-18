@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/data/repositories/product_repository.dart';
 import 'package:prior_soft/presentation/blocs/top_reviews_bloc/top_reviews_event.dart';
