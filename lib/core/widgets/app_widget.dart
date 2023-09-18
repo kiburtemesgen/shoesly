@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
+import 'package:prior_soft/presentation/blocs/create_order_bloc/create_order_bloc.dart';
 import 'package:prior_soft/presentation/blocs/filter_products_bloc/filter_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/top_reviews_bloc/top_reviews_bloc.dart';
@@ -19,6 +20,7 @@ class AppWidget extends StatelessWidget {
         BlocProvider<GetProductsBloc>(create: (_) => sl<GetProductsBloc>()),
         BlocProvider<TopReviewsBloc>(create: (_) => sl<TopReviewsBloc>()),
         BlocProvider<FilterProductsBloc>(create: (_) => sl<FilterProductsBloc>()),
+        BlocProvider<CreateOrderBloc>(create: (_) => sl<CreateOrderBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -27,7 +29,7 @@ class AppWidget extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        home: DiscoverPage(),
+        home: const DiscoverPage(),
       ),
     );
   }
