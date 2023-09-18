@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prior_soft/core/colors.dart';
@@ -6,7 +5,6 @@ import 'package:prior_soft/core/constants.dart';
 import 'package:prior_soft/core/widgets/custom_text.dart';
 import 'package:prior_soft/core/widgets/error_page.dart';
 import 'package:prior_soft/data/models/product_model.dart';
-import 'package:prior_soft/data/services/product_service.dart';
 import 'package:prior_soft/injector.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_event.dart';
@@ -16,16 +14,14 @@ import 'package:prior_soft/presentation/screens/product_detail_page.dart';
 import 'package:prior_soft/presentation/widgets/cart_icon.dart';
 
 class DiscoverPage extends StatefulWidget {
-  DiscoverPage({super.key});
+  const DiscoverPage({super.key});
 
   @override
   State<DiscoverPage> createState() => _DiscoverPageState();
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  CollectionReference products =
-      FirebaseFirestore.instance.collection('products');
+
 
   int brandIndex = 0;
   List<String> categories = [
@@ -79,14 +75,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             InkWell(
               onTap: () async {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => FilterPage()));
-                print('filter button is pressed');
-                // ProductService service = ProductService();
-
-                // return products
-                //     .add(service.productsMock[0].toJson())
-                //     .then((value) => print("User Added"))
-                //     .catchError((error) => print("Failed to add user: $error"));
+                    MaterialPageRoute(builder: (context) => const FilterPage()));    
               },
               child: customText(
                   text: 'FILTER',
