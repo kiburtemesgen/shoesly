@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:prior_soft/data/repositories/product_repository.dart';
 import 'package:prior_soft/data/services/product_service.dart';
 import 'package:prior_soft/presentation/blocs/cart_bloc/cart_bloc.dart';
+import 'package:prior_soft/presentation/blocs/create_order_bloc/create_order_bloc.dart';
 import 'package:prior_soft/presentation/blocs/filter_products_bloc/filter_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_bloc.dart';
 import 'package:prior_soft/presentation/blocs/get_reviews_bloc/get_reviews_bloc.dart';
@@ -25,6 +26,7 @@ Future setupInjector() async {
       () => GetReviewsBloc(productRepository: sl()));
   sl.registerLazySingleton<TopReviewsBloc>(
       () => TopReviewsBloc(productRepository: sl()));
-  sl.registerLazySingleton<FilterProductsBloc>(
-      () => FilterProductsBloc());
+  sl.registerLazySingleton<FilterProductsBloc>(() => FilterProductsBloc());
+  sl.registerLazySingleton<CreateOrderBloc>(
+      () => CreateOrderBloc(productRepository: sl()));
 }
