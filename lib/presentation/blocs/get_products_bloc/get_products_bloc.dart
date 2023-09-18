@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:prior_soft/core/constants.dart';
 import 'package:prior_soft/data/repositories/product_repository.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_event.dart';
 import 'package:prior_soft/presentation/blocs/get_products_bloc/get_products_state.dart';
